@@ -7,4 +7,5 @@ using UnityEngine;
 public class UIManager
 {
     public EdditerType checkedEditorTools;
+    public RectTransform targetIMG;
 }
