@@ -11,6 +11,7 @@ public class Test : MonoBehaviour
     public RectTransform targetParent;
     public UnityEngine.UI.Image parentIMG;
     public Vector2 targetOriginValue;
+    public RectTransform menuBar;
     // Start is called before the first frame update
     void Start()
     {
@@ -20,15 +21,17 @@ public class Test : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        MenuBarMovement();
         if (Input.GetKeyDown(KeyCode.Mouse0))
         {
             if (isOnBTNUI())
             {
+                FindTarget();
                 switch (Managers.instance.UIManager.checkedEditorTools)
                 {
                     case EdditerType.None:
                         dragStart[0] = Vector3.zero;
-                        FindTarget();
+
                         break;
                     case EdditerType.Scale:
                         dragStart[0] = Input.mousePosition;
@@ -68,8 +71,19 @@ public class Test : MonoBehaviour
                         dragStart[1] = Input.mousePosition;
                         if (targetIMGTR !=null)
                         {
-                            targetIMGTR.sizeDelta = targetOriginValue + (relVa * NormalizedVec());
-                            targetParent.sizeDelta = targetIMGTR.sizeDelta;
+                            if ((Managers.instance.UIManager.targetIMG.rotation.eulerAngles/180).z == 0)
+                            {
+                                targetIMGTR.sizeDelta = targetOriginValue + (relVa * NormalizedVec());
+                                targetParent.sizeDelta = targetIMGTR.sizeDelta;
+                            }
+                            else
+                            {
+                                Vector2 normalTempVec = targetOriginValue + (relVa * NormalizedVec());
+
+                                targetIMGTR.sizeDelta = new Vector2(normalTempVec.y, normalTempVec.x);
+                                targetParent.sizeDelta = targetIMGTR.sizeDelta;
+                            }
+
                         }
                         break;
                     case EdditerType.RotCloakDir:
@@ -105,6 +119,25 @@ public class Test : MonoBehaviour
                     break;
             }
         }
+
+    }
+    public void MenuBarMovement()
+    {
+        if (targetIMGTR != null)
+        {
+            if (!menuBar.gameObject.activeSelf)
+            {
+                menuBar.gameObject.SetActive(true);
+            }
+            menuBar.anchoredPosition = targetParent.anchoredPosition-(Vector2.up*(((targetIMGTR.sizeDelta.y+ menuBar.sizeDelta.y) / 2)));
+        }
+        else
+        {
+            if (menuBar.gameObject.activeSelf)
+            {
+                menuBar.gameObject.SetActive(false);
+            }
+        }
     }
     PointerEventData pointerEventData = new PointerEventData(EventSystem.current);
     public bool isOnBTNUI()
@@ -133,23 +166,47 @@ public class Test : MonoBehaviour
         {
             if (results[i].gameObject.layer == 7)
             {
-                targetIMGTR = results[i].gameObject.transform as RectTransform;
-                targetParent = targetIMGTR.parent as RectTransform;
-                Managers.instance.UIManager.targetIMG = targetParent;
-                targetOriginValue = new Vector2(targetIMGTR.rect.width, targetIMGTR.rect.height);
-                parentIMG = targetParent.GetComponent<UnityEngine.UI.Image>();
-                Color tempColor = Color.white;
-                tempColor.a = 255;
-                parentIMG.color = tempColor;
+                if (targetIMGTR == null)
+                {
+                    targetIMGTR = results[i].gameObject.transform as RectTransform;
+                    targetParent = targetIMGTR.parent as RectTransform;
+                    Managers.instance.UIManager.targetIMG = targetParent;
+                    targetOriginValue = new Vector2(targetIMGTR.rect.width, targetIMGTR.rect.height);
+                    parentIMG = targetParent.GetComponent<UnityEngine.UI.Image>();
+                    Color tempColor = Color.white;
+                    tempColor.a = 255;
+                    parentIMG.color = tempColor;
+                }
+                else
+                {
+                    Color tempColor = Color.white;
+                    tempColor.a = 0;
+                    parentIMG.color = tempColor;
+                    targetIMGTR = null;
+                    targetParent = null;
+                    targetIMGTR = results[i].gameObject.transform as RectTransform;
+                    targetParent = targetIMGTR.parent as RectTransform;
+                    Managers.instance.UIManager.targetIMG = targetParent;
+                    targetOriginValue = new Vector2(targetIMGTR.rect.width, targetIMGTR.rect.height);
+                    parentIMG = targetParent.GetComponent<UnityEngine.UI.Image>();
+                    Color tempColorTwo = Color.white;
+                    tempColorTwo.a = 255;
+                    parentIMG.color = tempColorTwo;
+                }
                 break;
             }
             else
             {
-                targetIMGTR = null;
-                targetParent = null;
                 Color tempColor = Color.white;
                 tempColor.a = 0;
-                parentIMG.color = tempColor;
+                Managers.instance.UIManager.checkedEditorTools = EdditerType.None;
+                if (parentIMG != null)
+                {
+                    parentIMG.color = tempColor;
+                }
+                Managers.instance.UIManager.targetIMG = null;
+                targetIMGTR = null;
+                targetParent = null;
             }
         }
     }
