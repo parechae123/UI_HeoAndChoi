@@ -9,11 +9,10 @@ public class IconCreater : MonoBehaviour
 
     public void OnClickCreateIcon()
     {
-        RectTransform tempRect = Instantiate<GameObject>(Resources.Load<GameObject>("mark_" + iconNumber), transform.parent.parent).transform as RectTransform;
-        tempRect.anchoredPosition = Vector3.zero;
-        if (Resources.Load<GameObject>("mark_" + iconNumber) != null)
+        if (Managers.instance.UIManager.targetClothFace != null)
         {
-
+            RectTransform tempRect = Instantiate<GameObject>(Resources.Load<GameObject>("mark_" + iconNumber), Managers.instance.UIManager.targetClothFace).transform as RectTransform;
+            tempRect.anchoredPosition = Vector3.zero;
         }
     }
 }

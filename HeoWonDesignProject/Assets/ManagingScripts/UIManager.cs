@@ -8,4 +8,5 @@ public class UIManager
 {
     public EdditerType checkedEditorTools;
     public RectTransform targetIMG;
+    public RectTransform targetClothFace;
 }

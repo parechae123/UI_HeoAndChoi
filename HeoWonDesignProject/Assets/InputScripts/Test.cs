@@ -12,10 +12,11 @@ public class Test : MonoBehaviour
     public UnityEngine.UI.Image parentIMG;
     public Vector2 targetOriginValue;
     public RectTransform menuBar;
+    public RenderCL clothProb = new RenderCL();
     // Start is called before the first frame update
     void Start()
     {
-        
+        clothProb.Init();
     }
 
     // Update is called once per frame
@@ -121,6 +122,15 @@ public class Test : MonoBehaviour
         }
 
     }
+    public void OnClickFrontIcon()
+    {
+        clothProb.State = RenderState.front;
+    }
+    public void OnClickBackIcon()
+    {
+        clothProb.State = RenderState.back;
+    }
+
     public void MenuBarMovement()
     {
         if (targetIMGTR != null)
